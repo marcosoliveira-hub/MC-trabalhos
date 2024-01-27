@@ -3,7 +3,17 @@ import matplotlib.pyplot as plt
 
 SQRT_2 = 1.41421356237309584880
 
+# Trabalho Matemática Computacional
 
+# Grupo:
+# - Marcos Vinicius de Oliveira RA: 124408
+# - Guilherme Frare Clemente RA: 124349
+
+
+# Trabalho da raiz quadrada
+
+
+# Função que calcula a raiz quadrada de um número x
 def my_sqrt(x):
     m, k = math.frexp(x)
     m, k  = m * 2, k - 1
@@ -34,11 +44,12 @@ def my_sqrt(x):
     return sqrt_f * sqrt_2k
 
 
-
+# Função que calcula o erro entre a raiz quadrada calculada e a raiz quadrada da biblioteca math
 def erro(x):
     return math.fabs(math.sqrt(x) - my_sqrt(x))
 
 
+# Função que calcula o erro entre a raiz quadrada calculada e a raiz quadrada da biblioteca math
 def numbers(start, end, step):
     number = []
     n = start
@@ -47,6 +58,8 @@ def numbers(start, end, step):
         n += step
     return number
 
+# Função principal
+# Plota o gráfico do erro em função do número
 def main():
     numeros = numbers(0, 5, 0.05)
     erros = [erro(x) for x in numeros]
