@@ -9,23 +9,7 @@
 import math
 import matplotlib.pyplot as plt 
 
-# import numpy as np
-
-euler = math.e
-# Primeiro passo: Calcular:
-#  e^x = 2^n * (e^r)^256
-
-# r = x - n*ln(2) / 256
-
-# n = math.ceil(x/ln(2) - 0.5)
-
-# e^r = 1 + x * (1 + x * ((1/2) + x ((1/6) + (1/24) * x)))
-
-# condicao para 2^n
-
-# Se n >= 0, entao 1 << n
-# senao, (1 / 1 << n)
-
+EULER = math.e
 
 def recursiva(base, k):
     if k < 0:
@@ -63,7 +47,7 @@ def my_exp(base, x):
     
 
 def error(x):
-    return abs(math.exp(x) - my_exp(euler, x))
+    return abs(math.exp(x) - my_exp(EULER, x))
 
 
 def numbers(start, end, step):
