@@ -9,8 +9,10 @@
 import math
 import matplotlib.pyplot as plt 
 
+# Numero de Euler
 EULER = math.e
 
+# Função recursiva para exponenciação
 def recursiva(base, k):
     if k < 0:
         return recursiva(1/base, -k)
@@ -23,6 +25,8 @@ def recursiva(base, k):
     else:
         return base * recursiva(base, k-1)
 
+# Função que calcula a exponenciação pelo método de Bailey
+# Apenas a parte fracionária de x é utilizada
 def bailey(x):
     
     n = math.ceil(x/math.log(2) - 0.5)
@@ -38,6 +42,7 @@ def bailey(x):
     return c1 * (er ** 256)
 
 
+# Função que aplica o método de Bailey para calcular a exponenciação
 def my_exp(base, x):
 
     x_inteira = int(x)
@@ -45,11 +50,12 @@ def my_exp(base, x):
     return recursiva(base, x_inteira) * bailey(x_fracionada)
     
     
-
+# Função que calcula o erro entre a função exponencial do python e a função exponencial calculada pelo método de Bailey
 def error(x):
     return abs(math.exp(x) - my_exp(EULER, x))
 
 
+# Função que retorna uma lista de números de start até end com passo step
 def numbers(start, end, step):
     number = []
     n = start
@@ -58,7 +64,7 @@ def numbers(start, end, step):
         n += step
     return number
 
-
+# Função principal
 def main():
     numeros = numbers(-5, 5, 0.05)
     erros = [error(x) for x in numeros]
