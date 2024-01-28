@@ -12,5 +12,5 @@ $ Python exTabela.py (caso você queira testar o exemplo de exponenciação pelo
 
 Certifique-se de ter a biblioteca do matplotlib instalada na versão Python em sua máquina.
 
-Para instalar apenas digite o comando: pip install matplotlib diretamente no diretório onde está instalado seu Python.
+Para instalar apenas digite o comando: ```pip install matplotlib``` diretamente no diretório onde está instalado seu Python.
 
