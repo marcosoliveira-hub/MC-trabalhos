@@ -1,5 +1,7 @@
-import math 
+import math
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def fatorial(n):
     if n == 0:
@@ -7,91 +9,82 @@ def fatorial(n):
     else:
         return n * fatorial(n-1)
 
-def chebyshev_series(n, x):
-    result = 0
-    for k in range(n + 1):
-        coefficient = (-1)**k * (x**(2*k))
-        coefficient /= fatorial(2*k)
-        result += coefficient
-    return result
 
-def chebyshev_economic_series(n, x):
-    tn_x = chebyshev_series(n, x)
-    an = (-1)**n / (2**n - 1)
-    pn_minus_1_x = tn_x - an * (chebyshev_series(n, x) / (2**(n-1) - 1))
-    return pn_minus_1_x
+def sen_taylor(x):
+    y = x * x
+    return x * (1 - y * (1/fatorial(3) + y * (1/fatorial(5) - y * (1/fatorial(7) + y * (1/fatorial(9) - y * (1/fatorial(11)))))))
 
-def reduce_argument(x, K):
-    return x - K * math.floor(x / K)
+def cos_taylor(x):
+    y = x * x
+    return 1 - y * (1/fatorial(2) + y * (1/fatorial(4) - y * (1/fatorial(6) + y * (1/fatorial(8) - y * (1/fatorial(10)) + y * (1/fatorial(12))))))
+    
 
-def sin_chebyshev(x, n):
-    reduced_x = reduce_argument(x, math.pi / 4)
-    result = chebyshev_economic_series(n, reduced_x)
-    if abs(reduced_x) == math.pi / 4:
-        return math.sin(reduced_x)
+def sen(x):
+    if (x > (-1 * (math.pi/4)) and (x < (math.pi/4))):
+        return sen_taylor(x)
     else:
-        k = math.floor(x / (math.pi / 4))
-        if abs(k) % 4 == 1 or abs(k) % 4 == 2:
-            result *= -1
-        return result
+       k = math.ceil((x - (math.pi/4)) / math.pi/2)
+       r = x - k * (math.pi/2)
 
-def cos_chebyshev(x, n):
-    reduced_x = reduce_argument(x, math.pi / 4)
-    result = chebyshev_economic_series(n, reduced_x)
-    if abs(reduced_x) == math.pi / 4:
-        return math.cos(reduced_x)
+       if (abs(k) % 4) == 0:
+           return sen_taylor(r)
+       elif (abs(k) % 4) == 1:
+            return cos_taylor(r)
+       elif (abs(k) % 4) == 2:
+            return -sen_taylor(r)
+       elif (abs(k) % 4) == 3:
+            return -cos_taylor(r)
+       
+def cos(x):
+    if (x > (- math.pi/4)) and (x < (math.pi/4)):
+        return cos_taylor(x)
     else:
-        k = math.floor(x / (math.pi / 4))
-        if abs(k) % 4 == 1 or abs(k) % 4 == 2:
-            result *= -1
-        return result
+       k = math.ceil((x - (math.pi/4)) / math.pi/2)
+       r = x - k * (math.pi/2)
 
-def sin_chebyshev_2x(x, n):
-    reduced_x = reduce_argument(reduce_argument(x, math.pi / 4), math.pi / 4)
-    result = chebyshev_economic_series(n, reduced_x)
-    if abs(reduced_x) == math.pi / 4:
-        return math.sin(reduced_x)
-    else:
-        k = math.floor(x / (math.pi / 4))
-        if abs(k) % 4 == 1 or abs(k) % 4 == 2:
-            result *= -1
-        return result
+       if (abs(k) % 4) == 0:
+           return cos_taylor(r)
+       elif (abs(k) % 4) == 1:
+            return -sen_taylor(r)
+       elif (abs(k) % 4) == 2:
+            return -cos_taylor(r)
+       elif (abs(k) % 4) == 3:
+            return -sen_taylor(r)
 
-def cos_chebyshev_2x(x, n):
-    reduced_x = reduce_argument(reduce_argument(x, math.pi / 4), math.pi / 4)
-    result = chebyshev_economic_series(n, reduced_x)
-    if abs(reduced_x) == math.pi / 4:
-        return math.cos(reduced_x)
-    else:
-        k = math.floor(x / (math.pi / 4))
-        if abs(k) % 4 == 1 or abs(k) % 4 == 2:
-            result *= -1
-        return result
 
-x_values = [-2 * math.pi, -math.pi, -math.pi/2, 0, math.pi/2, math.pi, 2 * math.pi]
-n = 11
 
-for x in x_values:
-    print(f"Seno de {x}: {sin_chebyshev(x, n)}")
-    print(f"Cosseno de {x}: {cos_chebyshev(x, n)}")
+def erro_sin(x):
+    return abs(sen(x) - math.sin(x))
 
-def plot_comparative_graph(x_values, y1_values, y2_values, y3_values, title):
-    plt.plot(x_values, y1_values, label="Original", color='red')
-    plt.plot(x_values, y2_values, label="Reduzido 1x", color='blue')
-    plt.plot(x_values, y3_values, label="Reduzido 2x", color='green')
-    plt.xlabel("x")
-    plt.ylabel("Valor")
-    plt.title(title)
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+def erro_cos(x):
+    return abs(cos(x) - math.cos(x))
 
-y1_values_sin = [math.sin(x) for x in x_values]
-y2_values_sin = [sin_chebyshev(x, n) for x in x_values]
-y3_values_sin = [sin_chebyshev_2x(x, n) for x in x_values]
-plot_comparative_graph(x_values, y1_values_sin, y2_values_sin, y3_values_sin, "Comparação do Seno")
 
-y1_values_cos = [math.cos(x) for x in x_values]
-y2_values_cos = [cos_chebyshev(x, n) for x in x_values]
-y3_values_cos = [cos_chebyshev_2x(x, n) for x in x_values]
-plot_comparative_graph(x_values, y1_values_cos, y2_values_cos, y3_values_cos, "Comparação do Cosseno")
+x = np.linspace(-2*np.pi, 2*np.pi, 1000)
+
+# Calcule os erros para cada x
+erro_sen = [erro_sin(i) for i in x]
+erro_cos = [erro_cos(i) for i in x]
+
+# Crie o plot
+plt.figure(figsize=(10, 6))
+
+# Plot erro do seno
+plt.plot(x, erro_sen, label='Erro do Seno')
+
+# Plot erro do cosseno
+plt.plot(x, erro_cos, label='Erro do Cosseno')
+
+# Adicione um título e rótulos aos eixos
+plt.title('Erro do Seno e Cosseno')
+plt.xlabel('x')
+plt.ylabel('Erro')
+
+# Adicione uma legenda
+plt.legend()
+
+# Adicione linhas de grade
+plt.grid(True)
+
+# Mostre o plot
+plt.show()
