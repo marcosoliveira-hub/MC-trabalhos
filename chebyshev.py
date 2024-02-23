@@ -2,76 +2,83 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def fatorial(n):
-    if n == 0:
-        return 1
-    else:
-        return n * fatorial(n-1)
-
-
 def sen_taylor(x):
     y = x * x
-    return x * (1 - y * (1/fatorial(3) + y * (1/fatorial(5) - y * (1/fatorial(7) + y * (1/fatorial(9) - y * (1/fatorial(11)))))))
+    return x * (1 + y * ((-1/6) + y * ((1/120) + y * ((-1/5040) + y * ((1/362880) + y * (-1/39916800))))))
 
 def cos_taylor(x):
     y = x * x
-    return 1 - y * (1/fatorial(2) + y * (1/fatorial(4) - y * (1/fatorial(6) + y * (1/fatorial(8) - y * (1/fatorial(10)) + y * (1/fatorial(12))))))
-    
+    return 1 + y * ((-1/2) + y * ((1/24) + y * ((-1/720) + y * ((1/40320) + y * ((-1/3628800) + y * (1/479001600))))))
 
 def sen(x):
-    if (x > (-1 * (math.pi/4)) and (x < (math.pi/4))):
+    if (x >= (-1 * (math.pi/4)) and (x <= (math.pi/4))):
         return sen_taylor(x)
     else:
        k = math.ceil((x - (math.pi/4)) / math.pi/2)
-       r = x - k * (math.pi/2)
+       r = x - (k * (math.pi/2))
 
-       if (abs(k) % 4) == 0:
-           return sen_taylor(r)
-       elif (abs(k) % 4) == 1:
-            return cos_taylor(r)
-       elif (abs(k) % 4) == 2:
-            return -sen_taylor(r)
-       elif (abs(k) % 4) == 3:
-            return -cos_taylor(r)
-       
+       match (abs(k) % 4):
+              case 0:
+                return sen_taylor(r)
+              case 1:
+                return cos_taylor(r)
+              case 2:
+                return -sen_taylor(r)
+              case 3:
+                return -cos_taylor(r)
+              case _:
+                return "Erro"
+
 def cos(x):
-    if (x > (- math.pi/4)) and (x < (math.pi/4)):
+    if (x >= (- math.pi/4)) and (x <= (math.pi/4)):
         return cos_taylor(x)
     else:
        k = math.ceil((x - (math.pi/4)) / math.pi/2)
-       r = x - k * (math.pi/2)
-
-       if (abs(k) % 4) == 0:
-           return cos_taylor(r)
-       elif (abs(k) % 4) == 1:
-            return -sen_taylor(r)
-       elif (abs(k) % 4) == 2:
-            return -cos_taylor(r)
-       elif (abs(k) % 4) == 3:
-            return -sen_taylor(r)
+       r = x - (k * (math.pi/2))
+       match (abs(k) % 4):
+              case 0:
+                return cos_taylor(r)
+              case 1:
+                return -sen_taylor(r)
+              case 2:
+                return -cos_taylor(r)
+              case 3:
+                return sen_taylor(r)
+              case _:
+                return "Erro"
 
 
 
 def erro_sin(x):
-    return abs(sen(x) - math.sin(x))
+    return abs(math.sin(x) - sen(x))
 
 def erro_cos(x):
-    return abs(cos(x) - math.cos(x))
+    return abs(math.cos(x) - cos(x))
 
 
-x = np.linspace(-1, 1, 1000)
+# Intervalo de valores de x
+x_values = np.linspace(-1, 1, 1000)
 
-erro_sen = [erro_sin(i) for i in x]
-erro_cosx = [erro_cos(i) for i in x]
+# Calculando os erros para seno e cosseno
+sen_errors = [erro_sin(x) for x in x_values]
+cos_errors = [erro_cos(x) for x in x_values]
 
-plt.figure(figsize=(10, 6))
-plt.plot(x, erro_sen, label='Erro do Seno')
-plt.plot(x, erro_cosx, label='Erro do Cosseno')
-plt.title('Erro do Seno e Cosseno')
+# Plotando os gráficos
+plt.figure(figsize=(10, 5))
+
+plt.subplot(1, 2, 1)
+plt.plot(x_values, sen_errors, label='Erro do Seno')
+plt.title('Erro do Seno')
 plt.xlabel('x')
 plt.ylabel('Erro')
-
 plt.legend()
-plt.grid(True)
+
+plt.subplot(1, 2, 2)
+plt.plot(x_values, cos_errors, label='Erro do Cosseno', color='orange')
+plt.title('Erro do Cosseno')
+plt.xlabel('x')
+plt.ylabel('Erro')
+plt.legend()
+
+plt.tight_layout()
 plt.show()
