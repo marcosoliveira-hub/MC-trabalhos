@@ -60,31 +60,18 @@ def erro_cos(x):
     return abs(cos(x) - math.cos(x))
 
 
-x = np.linspace(-2*np.pi, 2*np.pi, 1000)
+x = np.linspace(-1, 1, 1000)
 
-# Calcule os erros para cada x
 erro_sen = [erro_sin(i) for i in x]
-erro_cos = [erro_cos(i) for i in x]
+erro_cosx = [erro_cos(i) for i in x]
 
-# Crie o plot
 plt.figure(figsize=(10, 6))
-
-# Plot erro do seno
 plt.plot(x, erro_sen, label='Erro do Seno')
-
-# Plot erro do cosseno
-plt.plot(x, erro_cos, label='Erro do Cosseno')
-
-# Adicione um título e rótulos aos eixos
+plt.plot(x, erro_cosx, label='Erro do Cosseno')
 plt.title('Erro do Seno e Cosseno')
 plt.xlabel('x')
 plt.ylabel('Erro')
 
-# Adicione uma legenda
 plt.legend()
-
-# Adicione linhas de grade
 plt.grid(True)
-
-# Mostre o plot
 plt.show()
