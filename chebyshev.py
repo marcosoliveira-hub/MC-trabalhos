@@ -11,7 +11,7 @@ def cos_taylor(x):
     return 1 + y * ((-1/2) + y * ((1/24) + y * ((-1/720) + y * ((1/40320) + y * ((-1/3628800) + y * (1/479001600))))))
 
 def sen(x):
-    if ((-math.pi/4) <= x <= (math.pi/4)):
+    if (x >= (-1 * (math.pi)/4) and x <= (math.pi/4)):
         return sen_taylor(x)
     else:
        k = math.ceil((x - (math.pi/4)) / math.pi/2)
@@ -30,7 +30,7 @@ def sen(x):
                 return "Erro"
 
 def cos(x):
-    if ((-math.pi/4) <= x <= (math.pi/4)):
+    if (x >= (-1 * (math.pi)/4) and x <= (math.pi/4)):
         return cos_taylor(x)
     else:
        k = math.ceil((x - (math.pi/4)) / math.pi/2)

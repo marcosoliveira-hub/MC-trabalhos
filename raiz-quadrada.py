@@ -55,8 +55,11 @@ def newton_raphson_sqrt(A, P):
 
 
 
-def calcular_A(A):
+def calcular_chute_inicial(A):
     pass
+
+
+    
 
 def newton_raphson_sqrt2(A, P):
     x_values = []
