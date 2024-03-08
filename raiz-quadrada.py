@@ -37,7 +37,7 @@ def newton_raphson_sqrt(A, P):
     y_values = []
 
     # Chute inicial
-    Xo = A / 2.0
+    Xo = calcular_chute_inicial(A)
     x1 = Xo
 
     erro = float('inf')
@@ -56,10 +56,13 @@ def newton_raphson_sqrt(A, P):
 
 
 def calcular_chute_inicial(A):
-    pass
-
-
+    if A < 0:
+        raise ValueError('A não pode ser negativo')
     
+    f = A - 1
+    x0 = 1 + f/2
+
+    return x0
 
 def newton_raphson_sqrt2(A, P):
     x_values = []

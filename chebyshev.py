@@ -1,128 +1,150 @@
-import math
 import matplotlib.pyplot as plt
 import numpy as np
+import math as m
+
+# Objetivo: computar seno e cosseno com a garantia de alcance
+# de precisão de 10^-11, com x E [-2pi, 2pi].
+
+# Reduzir o número de multiplicações por meio da aplicação das séries 
+# telescópicas de Chebychev (séries econômicas).
+    
+#valores para reduzir o valor do argumento
+c = m.pi/2
+x_max = 0.7853981633974483 #45° ou Pi/4
 
 
-def sen_taylor(x):
-    y = x * x
-    return x * (
-        1
-        + y
-        * (
-            (-1 / 6)
-            + y
-            * ((1 / 120) + y * ((-1 / 5040) + y * ((1 / 362880) + y * (-1 / 39916800))))
-        )
-    )
+def fat(x):
+    if x == 0:
+        return 1
+    else:
+        return x * fat(x-1)
+
+
+def angle_to_rad(x):
+    return x * m.pi / 180
+
+
+def sin_taylor(x):
+    if x<=x_max and x>=-x_max:
+        return x - pow(x,3)/fat(3) + pow(x,5)/fat(5) - pow(x,7)/fat(7) + pow(x,9)/fat(9) - pow(x,11)/fat(11)
+    else:
+        return cos_taylor(x - c)
+
+
+#seno com uma redução, utilizando séries telescópicas
+def sin(x): #P(9)
+    if x<=x_max and x>=-x_max:
+        y = x*x
+        return x*(3715891199/3715891200 + y * (-30965759/185794560 + y * (276479/33177600 + y * (-2879/14515200 + y * (13/4838400)))))
+    else:
+        return cos(x - c)
+
+
+#seno com duas reduções, utilizando séries telescópicas
+def sin2(x): #P(7)
+    if x<=x_max and x>=-x_max:
+        y = x*x
+        return x*(116121589/116121600 + y * (-6193105/37158912 + y * (19343/2322432 + y * (-319/1658880))))
+    else:
+        return cos(x - c)
 
 
 def cos_taylor(x):
-    y = x * x
-    return 1 + y * (
-        (-1 / 2)
-        + y
-        * (
-            (1 / 24)
-            + y
-            * (
-                (-1 / 720)
-                + y * ((1 / 40320) + y * ((-1 / 3628800) + y * (1 / 479001600)))
-            )
-        )
-    )
-
-
-def sen(x):
-    while x > 2 * math.pi:
-        x -= 2 * math.pi
-
-    while x < -2 * math.pi:
-        x += 2 * math.pi
-
-    if x >= (-1 * (math.pi) / 4) and x <= (math.pi / 4):
-        return sen_taylor(x)
+    if x<=x_max and x>=-x_max:
+        return 1 - pow(x,2)/fat(2) + pow(x,4)/fat(4) - pow(x,6)/fat(6) + pow(x,8)/fat(8) - pow(x,10)/fat(10) + pow(x,12)/fat(12)
     else:
-        k = math.ceil((x - (math.pi / 4)) / math.pi / 2)
-        r = x - (k * (math.pi / 2))
+        k = m.ceil((x - x_max)/c)
+        xr = x - k*c
+        if k%4 == 0:
+            return cos_taylor(xr)
+        elif k%4 == 1:
+            return -sin_taylor(xr)
+        elif k%4 == 2:
+            return -cos_taylor(xr)
+        else:
+            return sin_taylor(xr)
 
-        match (abs(k) % 4):
-            case 0:
-                return sen_taylor(r)
-            case 1:
-                return cos_taylor(r)
-            case 2:
-                return -sen_taylor(r)
-            case 3:
-                return -cos_taylor(r)
-            case _:
-                return "Erro"
-
-
-def cos(x):
-    while x > 2 * math.pi:
-        x -= 2 * math.pi
-
-    while x < -2 * math.pi:
-        x += 2 * math.pi
-    if x >= (-1 * (math.pi) / 4) and x <= (math.pi / 4):
-        return cos_taylor(x)
+# cos com uma redução, utilizando séries telescópicas
+def cos(x): #~P(10) 
+    if x<=x_max and x>=-x_max:
+        y = x*x 
+        return 980995276801/980995276800 + y * (-6812467201/13624934400 + y * (48660481/1167851520 + y * (-380161/273715200 + y * (503/20275200 + y * (-1/3548160)))))
     else:
-        k = math.ceil((x - (math.pi / 4)) / math.pi / 2)
-        r = x - (k * (math.pi / 2))
-        match (abs(k) % 4):
-            case 0:
-                return cos_taylor(r)
-            case 1:
-                return -sen_taylor(r)
-            case 2:
-                return -cos_taylor(r)
-            case 3:
-                return sen_taylor(r)
-            case _:
-                return "Erro"
+        k = m.ceil((x - x_max)/c)
+        xr = x - k*c #reduzindo o valor do argumento
+        if k%4 == 0:
+            return cos(xr)
+        elif k%4 == 1:
+            return -sin(xr)
+        elif k%4 == 2:
+            return -cos(xr)
+        else:
+            return sin(xr)
 
 
-def erro_sin(x):
-    return abs(math.sin(x) - sen(x))
+def cos2(x): #~P(8) 
+    if x<=x_max and x>=-x_max:
+        y = x*x 
+        return 12740198393/12740198400 + y * (-309657583/619315200 + y * (30965597/743178240 + y * (-138179/99532800 + y * (311/12902400))))
+    else:
+        k = m.ceil((x - x_max)/c)
+        xr = x - k*c #reduzindo o valor do argumento
+        if k%4 == 0:
+            return cos(xr)
+        elif k%4 == 1:
+            return -sin(xr)
+        elif k%4 == 2:
+            return -cos(xr)
+        else:
+            return sin(xr)
+
+        
+def plot_values():
+    x = []
+    y = []
+    z = []
+
+    escolha = int(input("Escolha como deseja realizar o Calculo:\n 1 - Taylor\n 2 - Chebyshev - uma redução\n 3 - Chebyshev - duas reduções\nSua escolha: "))
+
+    n = -360
+
+    if escolha == 1:
+        while n <= 360:
+            x.append(n)
+            y.append(abs(m.sin(angle_to_rad(n)) - sin_taylor(angle_to_rad(n))))
+            z.append(abs(m.cos(angle_to_rad(n)) - cos_taylor(angle_to_rad(n))))
+
+            n += 1
+    elif escolha == 2:
+        while n <= 360:
+            x.append(n)
+            y.append(abs(sin_taylor(angle_to_rad(n)) - sin(angle_to_rad(n))))
+            z.append(abs(cos_taylor(angle_to_rad(n)) - cos(angle_to_rad(n))))
+
+            n += 1
+    elif escolha == 3:
+        while n <= 360:
+            x.append(n)
+            y.append(abs(sin_taylor(angle_to_rad(n)) - sin2(angle_to_rad(n))))
+            z.append(abs(cos_taylor(angle_to_rad(n)) - cos2(angle_to_rad(n))))
+
+            n += 1
+    
+    return x,y,z
 
 
-def erro_cos(x):
-    return abs(math.cos(x) - cos(x))
+x, y, z = plot_values()
 
 
-# Intervalo de valores de x
-x_values = np.linspace(-8 * math.pi, 8 * math.pi, 1000)
-
-# Calculando os erros para seno e cosseno
-sen_errors = [erro_sin(x) for x in x_values]
-cos_errors = [erro_cos(x) for x in x_values]
-
-# Plotando os gráficos
 plt.figure(figsize=(10, 5))
 
-plt.subplot(1, 2, 1)
-plt.plot(x_values, sen_errors, label="Erro do Seno")
-plt.title("Erro do Seno")
-plt.xlabel("x")
-plt.ylabel("Erro")
-plt.legend()
 
-plt.subplot(1, 2, 2)
-plt.plot(x_values, cos_errors, label="Erro do Cosseno", color="orange")
-plt.title("Erro do Cosseno")
-plt.xlabel("x")
-plt.ylabel("Erro")
-plt.legend()
+# # plt.subplot(3, 1, 1)
+plt.plot(x, y, color='blue')
+#plt.plot(x, z, color='red')
+plt.title('Gráfico do Cálculo do Seno')
+plt.xlabel('Ângulo (°)')    
+plt.ylabel('Erro')
+plt.legend(['Seno', 'Cosseno'])
 
-plt.tight_layout()
 plt.show()
-
-
-# T11 = 1024x11 - 2816x9 + 2816x7 - 1232x5 + 220x3 - 11x
-# Dividir o polinomio de chebyshev por 1024, para conseguirmos ter o monico
-
-# sen(x) = sen(x)11 - (Polinomio monico de chebyshev de grau 11)
-# sen(x) = sen(x)11 - ( an * tn(x)/2^n - 1)
-
-# an e o termo de grau 11 do sen(x)11
-# Nesse caso seria o -1/11!
