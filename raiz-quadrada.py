@@ -1,7 +1,12 @@
 import math
 import matplotlib.pyplot as plt
+import struct
+import numpy as np
+
 
 SQRT_2 = 1.41421356237309584880
+P_64 = 2 ** 61
+Q_64 = 2 ** 52
 
 def my_sqrt(x):
     m, k = math.frexp(x)
@@ -33,6 +38,9 @@ def my_sqrt(x):
     return sqrt_f * sqrt_2k
 
 def newton_raphson_sqrt(A, P):
+    if A == 0.0:
+        return [0.0], [0.0], 0
+    
     x_values = []
     y_values = []
 
@@ -47,7 +55,7 @@ def newton_raphson_sqrt(A, P):
         x_values.append(x1)
         y_values.append(abs(math.sqrt(A) - x1))
         x0 = x1
-        x1 = 0.5 * (x0 + A / x0)
+        x1 = 0.5 * (x0 + A / x0) 
         erro = abs(x1 - x0)
         iter_count += 1
 
@@ -56,15 +64,29 @@ def newton_raphson_sqrt(A, P):
 
 
 def calcular_chute_inicial(A):
-    if A < 0:
-        raise ValueError('A não pode ser negativo')
+    if A == 0.0:
+        return 0.0
     
-    f = A - 1
-    x0 = 1 + f/2
+    P = P_64
+    Q = Q_64
 
-    return x0
+    class FloatUnion:
+        def __init__(self, f):
+            self.f = f
+            self.x = struct.unpack('<Q', struct.pack('<d', f))[0]
+    
+    val = FloatUnion(A)
+    val.x -= Q
+    val.x >>= 1
+    val.x += P
+
+    return struct.unpack('<d', struct.pack('<Q', val.x))[0]
+
 
 def newton_raphson_sqrt2(A, P):
+    if A == 0.0:
+        return [0.0], [0.0], 0
+    
     x_values = []
     y_values = []
 
@@ -86,25 +108,17 @@ def newton_raphson_sqrt2(A, P):
     return x_values, y_values, iter_count
 
 
-A = 16
 P = 1e-5
+x = np.linspace(0, 20, 10000)
+y = [newton_raphson_sqrt(x, P)[2] for x in x]
+y2 = [newton_raphson_sqrt2(x, P)[2] for x in x]
 
-x_values, y_values, iter_count_nr = newton_raphson_sqrt(A, P)
-real_sqrt = math.sqrt(A)
-x1_values, y1_values, iter_count_s = newton_raphson_sqrt2(A, P)
-
-plt.plot(range(len(x_values)), [real_sqrt] * len(x_values), label='Raiz Quadrada Real', linestyle='--')
-plt.plot(range(len(x_values)), x_values, marker='o', label='Estimativa de Newton-Raphson')
-plt.xlabel('Iteração')
-plt.ylabel('Valor')
-plt.title('Comparação entre a Raiz Quadrada Real e as Estimativas de Newton-Raphson')
+plt.plot(x, y, label='Newton-Raphson')
+plt.plot(x, y2, label='Newton-Raphson2')
+plt.xlabel('Valor de A')
+plt.ylabel('Iterações')
 plt.legend()
-plt.grid(True)
 plt.show()
 
 
-plt.bar(['Newton-Raphson', 'my_sqrt'], [iter_count_nr, iter_count_s])
-plt.xlabel('Método')
-plt.ylabel('Número de iterações')
-plt.title('Número de iterações para cada método')
-plt.show()
+
