@@ -119,6 +119,3 @@ plt.xlabel('Valor de A')
 plt.ylabel('Iterações')
 plt.legend()
 plt.show()
-
-
-
